@@ -1,0 +1,145 @@
+{
+  "name": "airtable",
+  "type": "executer",
+  "exposeRoute": false,
+  "execProgram": "node",
+  "main": "app.js",
+  "imgUrl": "logo.png",
+  "version": "0.0.2",
+  "category": [
+    "CLOUD",
+    "DATABASE"
+  ],
+  "keywords": [
+    "airtable",
+    "air",
+    "sheets",
+    "table",
+    "data",
+    "base",
+    "view"
+  ],
+  "settings": [
+    {
+      "name": "apiKey",
+      "viewName": "Default API Key",
+      "type": "vault",
+      "description": "Airtable personal API key to use by default.",
+      "learnUrl": "https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key-"
+    },
+    {
+      "name": "base",
+      "viewName": "Default Base ID",
+      "type": "string",
+      "description": "ID of the base to use by default.",
+      "placeholder": "app0RyRuTi8h1dbh7",
+      "learnUrl": "https://support.airtable.com/hc/en-us/articles/4405741487383-Understanding-Airtable-IDs"
+    },
+    {
+      "name": "table",
+      "viewName": "Default Table",
+      "type": "string",
+      "description": "Name or ID of the table to use by default.",
+      "placeholder": "tasks or tbl8A2nLpRlts9zBK",
+      "learnUrl": "https://support.airtable.com/hc/en-us/articles/4405741487383-Understanding-Airtable-IDs"
+    }
+  ],
+  "methods": [
+    {
+      "name": "listRecords",
+      "viewName": "List Records",
+      "params": [
+        {
+          "name": "apiKey",
+          "viewName": "API Key",
+          "required": true,
+          "type": "vault",
+          "description": "User's own API key used to authenticate requests",
+          "learnUrl": "https://airtable.com/account"
+        },
+        {
+          "name": "base",
+          "viewName": "Base ID",
+          "required": true,
+          "type": "string",
+          "description": "ID of the base",
+          "placeholder": "app0RyRuTi8h1dbh7",
+          "learnUrl": "https://support.airtable.com/hc/en-us/articles/4405741487383-Understanding-Airtable-IDs"
+        },
+        {
+          "name": "table",
+          "viewName": "Table",
+          "required": true,
+          "type": "string",
+          "description": "Name or ID of the table",
+          "placeholder": "Table 1 or tbl8A2nLpRlts9zBK",
+          "learnUrl": "https://support.airtable.com/hc/en-us/articles/4405741487383-Understanding-Airtable-IDs"
+        },
+        {
+          "name": "view",
+          "viewName": "View",
+          "type": "string",
+          "required": false,
+          "description": "Name or ID of the view",
+          "placeholder": "Grid view or viw1LOlp4upjyDtT8",
+          "learnUrl": "https://support.airtable.com/hc/en-us/articles/360021501754-Getting-started-customizing-your-first-view"
+        },
+        {
+          "name": "fieldsFilter",
+          "viewName": "Filter by field",
+          "required": false,
+          "type": "text",
+          "parserType": "array",
+          "description": "A list of specific fields to be retrieved, one per line",
+          "placeholder": "first_name\nlast_name"
+        },
+        {
+          "name": "formulaFilter",
+          "viewName": "Filter by formula",
+          "required": false,
+          "type": "string",
+          "description": "Filter defined with Airtable Formula",
+          "placeholder": "NOT({Name} = 'Peter')",
+          "learnUrl": "https://support.airtable.com/hc/en-us/articles/203255215-Formula-Field-Reference"
+        },
+        {
+          "name": "sortBy",
+          "viewName": "Sort by",
+          "type": "string",
+          "required": false,
+          "description": "Field's (column's) name",
+          "placeholder": "Name"
+        },
+        {
+          "name": "sortOrder",
+          "viewName": "Sort order",
+          "type": "options",
+          "default": "none",
+          "options": [
+            {
+              "id": "none",
+              "name": "None"
+            },
+            {
+              "id": "asc",
+              "name": "Ascending"
+            },
+            {
+              "id": "desc",
+              "name": "Descending"
+            }
+          ],
+          "required": false
+        },
+        {
+          "name": "totalMaxRecords",
+          "viewName": "Total max records",
+          "type": "int",
+          "required": false,
+          "description": "The records' number limit",
+          "placeholder": "100"
+        }
+      ]
+    }
+  ]
+}

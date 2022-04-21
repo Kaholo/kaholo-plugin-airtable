@@ -1,6 +1,9 @@
 ## this is a default node.js .gitignore
 ## from https://github.com/github/gitignore/blob/main/Node.gitignore
 
+# Zip files
+*.zip
+
 # Logs
 logs
 *.log
@@ -131,3 +134,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+.kaholotmp
