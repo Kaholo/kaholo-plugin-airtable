@@ -1,85 +1,71 @@
-# Kaholo SystemXYZ Plugin
-This plugin integrates ACME, inc. SystemXYZ with Kaholo, providing access to SystemXYZ's alerting functionality, for example sending a Ex message or setting an Zed alarm to notify someone of the results of a Kaholo Pipeline Action. For triggering Kaholo Pipelines from SystemXYZ, please see the Kaholo [SystemXYZ trigger](https://github.com/Kaholo/kaholo-trigger-systemxyz) instead.
+# Kaholo Airtable Plugin
+This plugin integrates Airtable with Kaholo, providing access to list Airtable data in Kaholo. This first iteration of the plugin does only this, with optional filtering by field and formula, sorting, and/or choosing a particular Airtable view.
 
 ## Prerequisites
-This plugin works with SystemXYZ version 4.0 and later, both SaaS platform and locally hosted versions.
-
-The following SystemXYZ APIs must be enabled for 3rd party access in the SystemXYZ Platform. The Kaholo plugin's service ID string is "kaholo-plugin-da2de162". SystemXYZ does not support 3rd party access to the Wy API so there are no Wy controller methods in the plugin.
-
->**SystemXYZ Ex API**
->
->**SystemXYZ Zed API**
-
-The SystemXYZ connectivity package must be installed on Kaholo agents. A `Test API` method is provided in the plugin. Check Parameter "Install API" in order to automatically install the SystemXYZ connectivity package. Alternatively, ask your Kaholo administrator to follow the [installation instructions](https://www.systemxyz.com.nz/install_connectivity_package/v4) on the SystemXYZ webite.
+The plugin requires an Airtable account with a personal API key. There must be at least one Airtable base and a table in it with some data. The personal API key and Airtable base ID look something like `keyvH5Dei3peZI58n` and `app2hL3K7MOlMwM6Z`, respectively. For tables, fields, and views ordinary names work, e.g. `Client List`, `first_name`, `Grid view`.
 
 ## Access and Authentication
-The plugin accesses SystemXYZ using the same URL as the web console, e.g. https://your-account.systemxyz.com.nz/. However, authentication with user/password is not permitted for automated processes.
+Airtable controls Access and Authentication using a person API token, which looks something like `app2hL3K7MOlMwM6Z`. This is a secret that should be guarded carefully. In Kaholo it is encrypted in the Kaholo vault, where it can be safely used without being exposed to users or appearing in log files, activity log, or final result.
 
-Instead the plugin uses SystemXYZ service tokens to authenticate. A SystemXYZ service token is a string that begins `XYZ-`, for example `XYZ-9ef6df656f9db28d4feaac0c0c6855bc`.  To get an appropriate service token, ask your SystemXYZ administrator for one that has permissions for the following actions:
-* ex-send
-* ex-send-email (only if email feature is used)
-* zed-readgroups
-* zed-triggergroups
-* xyz-vieworg
-* xyz-viewalarms
+To get a personal API key, while in the Airtable web console, click on the person-shaped icon on the top right of the display and select "Account". There's a section named "<> API" with a button to "Generate API key". Push that button. The key will remain masked until you put the active cursor in the text box to right-click and copy the API key.
 
-You will also what to specify which Zed groups you will access, or alternately if the service token is granted `zed-any`, the plugin will be able to read and trigger all SystemXYZ groups.
+The base ID is not a secret but your data is not accessible without knowing what your base ID is. To get your base ID, while in the Airtable web console, click on "Help" in the top-right corner of the display and select "<> API Documentation". Near the top there will be prominently displayed `The ID of this base is app2hL3K7MOlMwM6Z.`. If you switch base and do it again you can get the ID of all of your bases.
 
-You may have more than one service token, these are vaulted in the Kaholo Vault. The service token is needed for Parameter "XYZ Service Token" as described below.
+API key and Base ID are required parameters for all methods of this plugin.
 
 ## Plugin Installation
-For download, installation, upgrade, downgrade and troubleshooting of plugins in general, see [INSTALL.md](./INSTALL.md).
+For download, installation, upgrade, downgrade and troubleshooting of plugins in general, see [INSTALL.md](./INSTALL.md). INSTALL.md is included in both the code repository and the zip file.
 
 ## Plugin Settings
-Plugin settings act as default parameter values. If configured in plugin settings, the action parameters may be left unconfigured. Action parameters configured anyway over-ride the plugin-level settings for that Action.
-* Default XYZ Endpoint - The URL of your SystemXYZ installation, e.g. `https://your-account.systemxyz.com.nz/`
-* Default Zed Alarm Group - The Zed Alarm Group to use with Zed alarm methods, e.g. `zed-group-one`. Not used for Ex message-related methods.
-* Default Service Token (Vault) - The service token, stored in the Kaholo vault for authentication and access. e.g. `XYZ-9ef6df656f9db28d4feaac0c0c6855bc`
+Plugin settings act as default parameter values. If configured in plugin settings, the action parameters will be automatically pre-configured with these values, as a convenience.
+* Default API Key - an Airtable personal API key stored in the Kaholo Vault
+* Default Base ID - the ID of an Airtable base
+* Default Table - the name or ID of an Airtable table
 
-## Pipelining Alarm Messaging
-A common use case for this plugin is to prototype Wy controller notifications by catching Zed Hooks, applying logic, and sending Ex messages as appropriate. To do this the following steps are needed:
-1. Install and configure the Kaholo [SystemXYZ trigger](https://github.com/Kaholo/kaholo-trigger-systemxyz) to be activated by a [SystemXYZ Zed Hook](https://www.systemxyz.com.nz/zed_hooks/v4).
-1. Use the trigger to start your prototype Kaholo pipeline.
-1. Use method Read Zed Alarms to collect the active alarm list and details.
-1. Apply your logic using the Kaholo Code page and/or Kaholo Conditional Code.
-1. Use method Send Ex Message if your logic determines it appropriate.
+## Method List Records
+This method lists records from an Airtable table. With nothing but a table configured it will list every record in the table in no particular order. To select specific fields or records or sorting there are many optional parameters.
 
-## Method: Test API
-This method does a trivial test of the SystemXYZ connectivity package installed on the Kaholo agent, in order to validate that it is installed correctly and can network connect to the XYZ Endpoint. It returns only the version number of the SystemXYZ system and does not require a service token.
+### Parameter Table
+This is either the ordinary name of the Table as seen in the Airtable web console or its ID string, which begins with `tbl`. This is a required parameter.
 
-### Parameters
-Required parameters have an asterisk (*) next to their names.
-* XYZ Endpoint * - as described above in [plugin settings](#plugin-settings)
-* Install API (checkbox) - if checked and the connectivity package is not found on the agent, the plugin will attempt to automatically install it.
+### Parameter View
+This is either the ordinary name of the View as seen in the Airtable web console or its ID string. Views are helpful in that they can provide advanced filtering and sorting functionality for your data, including formulaic virtual fields. Once a view is appropriately configured a Kaholo user can use that view and then ignore all the other parameters for sorting and filtering. If you DO select a view and then use sorting anyway, the sorting specified in Kaholo overrides the sorting configured in the view.
 
-## Method: Send Ex Message
-This method composes an Ex Message to send to SystemXYZ users and/or groups. Message bodies may be in JSON, MD, HTML, or plain text format. Malformed JSON, MD, or HTML results in a plain text message. Combinations of users and groups are permitted. Users listed who are also group members or member in more than one group get the message only once.
+### Parameter Filter by Field
+By default the plugin returns every field from the table or view. If you prefer to retrieve only one or a list of specific fields, list them here one per line in the order you want them to appear in the results. No brackets or quotes should be used. If coding this field use a single string with fields separated by `\n`.
 
-> NOTE: Parameters left unconfigured get "Kaholo" by default, including message body and title. If parameter `Email` is selected, parameter `From` must be a valid user name or it will be rejected by SystemXYZ with `HTTP 404 - Page not found`. This also requires the service token have the special permission `ex-send-email`, otherwise you get the same HTTP 404 error.
+### Parameter Filter by Formula
+By default the plugin returns every record in the table. If you'd like only specific records, use this parameter to filter them using an Airtable formula. The formula typically evaluates to `TRUE()` or `FALSE()`, where if true the record is included and if false the record is excluded. For example using formula `FALSE()` as the filter results in no records returned at all.
 
-### Parameters
-Required parameters have an asterisk (*) next to their names.
-* XYZ Endpoint * - as described above in [plugin settings](#plugin-settings)
-* Service Token * - as described above in [plugin settings](#plugin-settings)
-* Message Title - plain text one-line title of the message
-* Message Body - the body of the message in JSON, MD, HTML, or plain text format
-* Recipients * - the list of recipients, either usernames or group names, one per line
-* From - indicates the source of the message, either a valid user name or arbitrary text string
-* Email - if checked and SystemXYZ is linked to an email system, the message is sent out as an email instead of a SystemXYZ Ex message.
+Fields must be enclosed in `{curly brackets}`. It's alright if the field has space in it but do NOT put spaces or quotes around the field. It is not case sensitive. for example if the field name is `ID number`:
 
-## Method: Read Zed Alarms
-This method reads a Zed Alarm group from SystemXYZ whether or not any of the alarms are active. It is commonly used with the Kaholo [SystemXYZ trigger](https://github.com/Kaholo/kaholo-trigger-systemxyz) and [SystemXYZ Zed Hooks](https://www.systemxyz.com.nz/zed_hooks/v4). The trigger provides the timely response to an alarm, while this method provides the details of the alarm.
+Good examples:
+* `{ID number} = 23522`
+* `{id number}=23522`
 
-If parameter `Zed Hook Code` is configured, the details on the triggering alarm are provided. If parameter `Alarm Group` is provided the details on all alarms (active or not) are provided. If both are configured, details on both are provided, even if the code refers to an alarm not in that group. This is useful in overcoming cross-group limitations in SystemXYZ alarms.
+Bad examples (will not work):
+* `{ ID number } = 23522`
+* `{"ID number"} = 23522`
 
-The Final Result in Kaholo is a JSON document of the same format as the equivalent [SystemXYZ Alarm Export](https://www.systemxyz.com.nz/alarm_export/v4).
+There are many functions and logic operators to choose from. For example to find a person who's first and last name both begin with "T":
 
-### Parameters
-Required parameters have an asterisk (*) next to their names.
-* XYZ Endpoint * - as described above in [plugin settings](#plugin-settings)
-* Service Token * - as described above in [plugin settings](#plugin-settings)
-* Zed Hook Code - a code string from Zed Hooks, e.g. `zed-20220329aad`
-* Zed Alarm Group - a Zed alarm group, e.g. `zed-group-one`
+`AND(FIND("T",{first_name})=1,FIND("T",{last_name})=1)`
 
-## Method: Set Zed Alarm
-This method is not yet implemented. If you are interested in setting Zed alarms from Kaholo, please let us know! support@kaholo.io.
+Or to find people with "oo" in their name:
+
+`OR(FIND("oo",{first_name})>0,FIND("oo",{last_name})>0)`
+
+For more information about Airtable formulas see their [formula field reference](https://support.airtable.com/hc/en-us/articles/203255215).
+
+### Parameter Sort By
+Sort By is a any field in the table or view by which you'd like to sort. This over-rides the view if a view that has a sort order already specified.
+
+For sorting on more than one field or other more sophisticated options, create a view in Airtable and then specify that view using the Kaholo plugin.
+
+### Parameter Sort Order
+Ascending and Descending sort orders are allowed. If you choose on of these, you must also specify parameter `Sort By`.
+
+### Parameter Total Max Records
+This parameter is to optionally restrict how many records are returned. By default all matching records are returned, which for large queries may overrun your allowed use of Airtable API queries because results are retrieved 100 at a time.
+
+If this parameter is configured to a number smaller than the count of records in the table or view that pass the filters, then the result set is truncated to provide exactly `Total Max Records` amount.

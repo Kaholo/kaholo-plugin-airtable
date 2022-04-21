@@ -37,8 +37,10 @@ async function listRecords(params) {
   /* eslint-disable no-await-in-loop */
   while (offset) {
     listRecordsUrl.searchParams.set("offset", offset);
+    /* eslint-disable no-await-in-loop */
     response = await fetch(listRecordsUrl.toString(), requestOptions);
     result = await response.json();
+    /* eslint-enable no-await-in-loop */
     offset = result.offset;
     records = records.concat(result.records);
   }
@@ -57,6 +59,12 @@ function setUrlParams(urlParams, {
 }) {
   if (fieldsFilter) {
     fieldsFilter.forEach((filter) => urlParams.append("fields", filter));
+    // workaround for Airtable defect (20220415)
+    // if only one field must specify it twice.
+    // otherwise TypeError: result.records is not iterable
+    if (fieldsFilter.length === 1) {
+      fieldsFilter.forEach((filter) => urlParams.append("fields", filter));
+    }
   }
 
   if (formulaFilter) {
@@ -67,13 +75,17 @@ function setUrlParams(urlParams, {
     urlParams.set("view", view);
   }
 
-  if (sortBy || sortOrder) {
-    if (!sortBy || !sortOrder) {
-      throw new Error("Sorting requires both \"Sort by\" and \"Sort order\" parameters");
-    }
+  if (sortOrder === "none" && sortBy) {
+    console.error("\"Sort By\" was specified but with \"Sort Order\" of \"None\" it will have no effect.");
+  }
 
-    urlParams.set("sort[0][field]", sortBy);
-    urlParams.set("sort[0][direction]", sortOrder);
+  if (sortOrder !== "none") {
+    if (sortBy) {
+      urlParams.set("sort[0][field]", sortBy);
+      urlParams.set("sort[0][direction]", sortOrder);
+    } else {
+      throw new Error("Sorting requires the \"Sort By\" parameter to contain a field name.");
+    }
   }
 
   if (totalMaxRecords) {

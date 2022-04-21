@@ -5,25 +5,31 @@
   "execProgram": "node",
   "main": "app.js",
   "imgUrl": "logo.png",
-  "version": "0.0.1",
-  "category": ["CLOUD"],
+  "version": "0.0.2",
+  "category": [
+    "CLOUD",
+    "DATABASE"
+  ],
   "keywords": [
     "airtable",
-    "Airtable",
+    "air",
     "sheets",
-    "table"
+    "table",
+    "data",
+    "base",
+    "view"
   ],
   "settings": [
     {
       "name": "apiKey",
-      "viewName": "API Key",
+      "viewName": "Default API Key",
       "type": "vault",
-      "description": "API key generated at the account page.",
-      "learnUrl": "https://airtable.com/account"
+      "description": "Airtable personal API key to use by default.",
+      "learnUrl": "https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key-"
     },
     {
       "name": "base",
-      "viewName": "Base",
+      "viewName": "Default Base ID",
       "type": "string",
       "description": "ID of the base to use by default.",
       "placeholder": "app0RyRuTi8h1dbh7",
@@ -31,10 +37,10 @@
     },
     {
       "name": "table",
-      "viewName": "Table",
+      "viewName": "Default Table",
       "type": "string",
       "description": "Name or ID of the table to use by default.",
-      "placeholder": "tasks",
+      "placeholder": "tasks or tbl8A2nLpRlts9zBK",
       "learnUrl": "https://support.airtable.com/hc/en-us/articles/4405741487383-Understanding-Airtable-IDs"
     }
   ],
@@ -53,11 +59,11 @@
         },
         {
           "name": "base",
-          "viewName": "Base",
+          "viewName": "Base ID",
           "required": true,
           "type": "string",
           "description": "ID of the base",
-          "placeholder": "app0RyRuTi8h1dbh7 or Tasks",
+          "placeholder": "app0RyRuTi8h1dbh7",
           "learnUrl": "https://support.airtable.com/hc/en-us/articles/4405741487383-Understanding-Airtable-IDs"
         },
         {
@@ -65,8 +71,8 @@
           "viewName": "Table",
           "required": true,
           "type": "string",
-          "description": "ID or name of the table",
-          "placeholder": "tblefEVL3hxIxcpf6",
+          "description": "Name or ID of the table",
+          "placeholder": "Table 1 or tbl8A2nLpRlts9zBK",
           "learnUrl": "https://support.airtable.com/hc/en-us/articles/4405741487383-Understanding-Airtable-IDs"
         },
         {
@@ -74,8 +80,8 @@
           "viewName": "View",
           "type": "string",
           "required": false,
-          "description": "ID or name of the view",
-          "placeholder": "viw1LOlp4upjyDtT8 or Completed Tasks",
+          "description": "Name or ID of the view",
+          "placeholder": "Grid view or viw1LOlp4upjyDtT8",
           "learnUrl": "https://support.airtable.com/hc/en-us/articles/360021501754-Getting-started-customizing-your-first-view"
         },
         {
@@ -84,8 +90,8 @@
           "required": false,
           "type": "text",
           "parserType": "array",
-          "description": "The fields' (columns') names which the result will be narrowed to",
-          "placeholder": "Name\nStatus"
+          "description": "A list of specific fields to be retrieved, one per line",
+          "placeholder": "first_name\nlast_name"
         },
         {
           "name": "formulaFilter",
@@ -108,7 +114,12 @@
           "name": "sortOrder",
           "viewName": "Sort order",
           "type": "options",
+          "default": "none",
           "options": [
+            {
+              "id": "none",
+              "name": "None"
+            },
             {
               "id": "asc",
               "name": "Ascending"
