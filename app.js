@@ -1,5 +1,5 @@
 const fetch = require("node-fetch");
-const { bootstrap } = require("kaholo-plugin-library");
+const { bootstrap } = require("@kaholo/plugin-library");
 
 const API_URL = "https://api.airtable.com/v0";
 
